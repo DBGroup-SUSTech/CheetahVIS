@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+
+        #map {
+            height: 100%;
+            left: 300px;
+            top: 0;
+            right: 250px;
+            bottom: 0;
+            float: right;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .navtable td {
+            text-align: center;
+            font-size: 15px;
+            vertical-align: top;
+        }
+
+        .navtable th {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        h1 {
+            display: none;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        main {
+            height: 100%;
+        }
+
+        section {
+            height: 100%;
+        }
+
+        #busFlow {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0px;
+        }
+
+        #timeline_footer {
+            /* background: #ddd; */
+            width: 100%;
+            height: 250px;
+            z-index: 10000000;
+            position: absolute;
+            text-align: center;
+            bottom: 0px;
+            /* text-align: center; */
+        }
+
+        .axis {
+            fill: none;
+            stroke: gray;
+            stroke-width: 1px;
+            color: gray;
+        }
+
+        #timeline_footer svg path{
+            fill: none;
+            /* stroke: steelblue; */
+            stroke: rgb(41, 44, 240);
+            stroke-width: 2px;
+        }
+
+        #timeline_footer svg path.domain,
+        .axis .tick line{
+            stroke: gray;
+            stroke-width: 1px;
+        }
+
+        #timeline_icon {
+            position: absolute;
+            z-index: 10000000;
+            bottom: 5px;
+            left: 40%;
+        }
+
+        .timelineIcon {
+            cursor: pointer;
+        }
+
+        #loadingIcon {
+            cursor: wait;
+        }
+
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            /*width: 40%;*/
+            border-radius: 5px;
+            margin: 5px;
+            width: 225px;
+            height: auto;
+        }
+
+        .snapshotcard {
+            cursor: pointer;
+            width: 100%;
+            height: auto;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+
+        .container {
+            padding: 2px 16px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            border-radius: 3px;
+            background: rgba(0,0,0,0.06);
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.08);
+        }
+        /* 滚动条滑块 */
+        ::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(0,0,0,0.12);
+            -webkit-box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        #minimap {
+            margin: 5px;
+            width: 290px;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 230px;
+            cursor: pointer;
+        }
+
+        .el-loading-mask {
+            height: 100%;
+        }
+
+
+
+        [slider] {
+            position: relative;
+            height: 10px;
+            border-radius: 10px;
+            text-align: left;
+            margin: 45px 0 10px 0;
+        }
+
+        [slider] > div {
+            position: absolute;
+            left: 13px;
+            right: 15px;
+            height: 10px;
+        }
+
+        [slider] > div > [inverse-left] {
+            position: absolute;
+            left: 0;
+            height: 10px;
+            border-radius: 10px;
+            background-color: grey;
+            margin: 0 7px;
+        }
+
+        [slider] > div > [inverse-right] {
+            position: absolute;
+            right: 0;
+            height: 10px;
+            border-radius: 10px;
+            background-color: #CCC;
+            margin: 0 7px;
+        }
+
+        [slider] > div > [range] {
+            position: absolute;
+            left: 0;
+            height: 10px;
+            border-radius: 14px;
+            background-color: #1ABC9C;
+        }
+
+        [slider] > div > [thumb] {
+            position: absolute;
+            top: -5px;
+            z-index: 2;
+            height: 18px;
+            width: 18px;
+            text-align: left;
+            margin-left: -11px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+            background-color: #FFF;
+            border-radius: 50%;
+            outline: none;
+        }
+
+        [slider] > input[type=range] {
+            position: absolute;
+            pointer-events: none;
+            -webkit-appearance: none;
+            z-index: 3;
+            height: 14px;
+            top: -2px;
+            width: 100%;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+            filter: alpha(opacity=0);
+            -moz-opacity: 0;
+            -khtml-opacity: 0;
+            opacity: 0;
+        }
+
+        div[slider] > input[type=range]::-ms-track {
+            -webkit-appearance: none;
+            background: transparent;
+            color: transparent;
+        }
+
+        div[slider] > input[type=range]::-moz-range-track {
+            -moz-appearance: none;
+            background: transparent;
+            color: transparent;
+        }
+
+        div[slider] > input[type=range]:focus::-webkit-slider-runnable-track {
+            background: transparent;
+            border: transparent;
+        }
+
+        div[slider] > input[type=range]:focus {
+            outline: none;
+        }
+
+        div[slider] > input[type=range]::-ms-thumb {
+            pointer-events: all;
+            width: 28px;
+            height: 28px;
+            border-radius: 0px;
+            border: 0 none;
+            background: red;
+        }
+
+        div[slider] > input[type=range]::-moz-range-thumb {
+            pointer-events: all;
+            width: 28px;
+            height: 28px;
+            border-radius: 0px;
+            border: 0 none;
+            background: red;
+        }
+
+        div[slider] > input[type=range]::-webkit-slider-thumb {
+            pointer-events: all;
+            width: 28px;
+            height: 28px;
+            border-radius: 0px;
+            border: 0 none;
+            background: red;
+            -webkit-appearance: none;
+        }
+
+        div[slider] > input[type=range]::-ms-fill-lower {
+            background: transparent;
+            border: 0 none;
+        }
+
+        div[slider] > input[type=range]::-ms-fill-upper {
+            background: transparent;
+            border: 0 none;
+        }
+
+        div[slider] > input[type=range]::-ms-tooltip {
+            display: none;
+        }
+
+        [slider] > div > [sign] {
+            opacity: 0;
+            position: absolute;
+            margin-left: -15px;
+            top: -39px;
+            z-index:3;
+            background-color: white;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 28px;
+            -webkit-border-radius: 28px;
+            align-items: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        [slider] > div > [sign]:after {
+            position: absolute;
+            content: '';
+            left: 0;
+            border-radius: 16px;
+            top: 19px;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top-width: 16px;
+            border-top-style: solid;
+            border-top-color: white;
+        }
+
+        [slider] > div > [sign] > span {
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 28px;
+        }
+
+        [slider]:hover > div > [sign] {
+            opacity: 1;
+        }
+
+    </style>
+
+    <meta charset="UTF-8">
+    <title>CheetahVIS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.draw/src/leaflet.draw.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"/>
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="szbus.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link href="https://cdn.bootcss.com/leaflet/1.6.0/leaflet.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/leaflet/1.6.0/leaflet.js"></script>
+    <link href="https://cdn.bootcss.com/leaflet.draw/1.0.4/leaflet.draw.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <link href="https://cdn.bootcss.com/leaflet.fullscreen/1.5.1/Control.FullScreen.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"></script>
+    <script src="https://cdn.bootcss.com/leaflet.fullscreen/1.5.1/Control.FullScreen.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/d3/5.12.0/d3.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+            crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+            integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+            crossorigin="anonymous"></script>
+    <link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js"
+            integrity="sha384-L2pyEeut/H3mtgCBaUNw7KWzp5n9+4pDQiExs933/5QfaTh8YStYFFkOzSoXjlTb"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    <script src="https://cdn.bootcss.com/leaflet.markercluster/1.4.0/leaflet.markercluster-src.js"></script>
+    <script src="https://cdn.bootcss.com/leaflet.markercluster/1.4.0/leaflet.markercluster.js"></script>
+    <link href="https://cdn.bootcss.com/leaflet.markercluster/1.4.0/MarkerCluster.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/leaflet.markercluster/1.4.0/MarkerCluster.Default.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/Ladda/1.0.6/ladda-themeless.min.css" rel="stylesheet">
+    <script src="heatmap.js"></script>
+    <script src="leaflet-heatmap.js"></script>
+    <script src="http://jdewit.github.io/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
+    <script src="szbus.js"></script>
+    <script src="leaflet.ChineseTmsProviders.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.4.0-rc.1/echarts.min.js"></script>
+    <script src="jquery.datetimepicker.full.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.js"></script>
+    <link href="jquery.datetimepicker.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/qs/6.5.2/qs.min.js"></script>
+    <script src="LeafletPlayback.js"></script>
+</head>
+
+<body>
+<!--<div id='map' style='width: 100%; height: 100%;'></div>-->
+
+<!--<canvas id="snapshot_canvas"></canvas>-->
+<div id="map" onClick="event.cancelBubble = true"
+     ondrag="event.cancelBubble = true">
+    <canvas class="aCanvas" width="100%" height="100%" style="z-index: inherit;"></canvas>
+    <div id="timeline_footer">
+        <div slider id="slider-distance" style="width: 200px; position: absolute; bottom: 20px; left: 20px;">
+            <div>
+                <div inverse-left style="width:70%;"></div>
+                <div inverse-right style="width:70%;"></div>
+                <div range style="left:6%;right:70%; background-color: hsl(0, 100%, 50%);"></div>
+                <div range style="left:30%;right:20%; background-color: hsl(48, 100%, 50%);"></div>
+                <div range style="left:80%;right:0%; background-color: hsl(120, 100%, 50%);"></div>
+
+
+                <span thumb style="left:6%;"></span>
+                <span thumb style="left:30%;"></span>
+                <span thumb style="left:80%;"></span>
+
+                <div sign id="sign1" style="left:6%;">
+                    <span id="value" style="color: black;">3</span>
+                </div>
+                <div sign id="sign2" style="left:30%;">
+                    <span id="value" style="color: black;">15</span>
+                </div>
+                <div sign id="sign3" style="left:80%;">
+                    <span id="value" style="color: black;">40</span>
+                </div>
+            </div>
+            <input type="range" tabindex="0" value="3" max="100" min="0" step="1" oninput="
+              this.value=Math.min(this.value,this.parentNode.childNodes[5].value-1);
+              var value=(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.value)-(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.min);
+              var children = this.parentNode.childNodes[1].childNodes;
+              children[1].style.width=value+'%';
+              children[5].style.left=value+'%';
+              children[7].style.left=value+'%';children[11].style.left=value+'%';
+              children[11].childNodes[1].innerHTML=this.value;" />
+
+            <input type="range" tabindex="0" value="15" max="100" min="0" step="1" oninput="
+              this.value=Math.max(this.value,this.parentNode.childNodes[3].value-(-1));
+              var value=(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.value)-(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.min);
+              var children = this.parentNode.childNodes[1].childNodes;
+              children[3].style.width=(100-value)+'%';
+              children[5].style.right=(100-value)+'%';
+              children[9].style.left=value+'%';children[13].style.left=value+'%';
+              children[13].childNodes[1].innerHTML=this.value;" />
+
+            <input type="range" tabindex="0" value="40" max="100" min="0" step="1" oninput="
+              this.value=Math.max(this.value,this.parentNode.childNodes[3].value-(-1));
+              var value=(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.value)-(100/(parseInt(this.max)-parseInt(this.min)))*parseInt(this.min);
+              var children = this.parentNode.childNodes[1].childNodes;
+              children[3].style.width=(100-value)+'%';
+              children[5].style.right=(100-value)+'%';
+              children[9].style.left=value+'%';children[13].style.left=value+'%';
+              children[13].childNodes[1].innerHTML=this.value;" />
+        </div>
+
+        <div id="busFlow">
+            <div id="timeline_icon">
+                <el-tooltip content="reset" placement="top">
+                    <img class="timelineIcon" src="timelineicon/reset.svg" height="50" width="50" @click='resetIcon' />
+                </el-tooltip>
+                <el-tooltip content="decelerate" placement="top">
+                    <img class="timelineIcon" src="timelineicon/decelerate.svg" height="50" width="50"
+                         @click='decelerateIcon' />
+                </el-tooltip>
+                <el-tooltip v-if='playing' content="pause" placement="top">
+                    <img class="timelineIcon" src="timelineicon/pause.svg" height="50" width="50" @click='pauseIcon' />
+                </el-tooltip>
+                <el-tooltip v-else content="play" placement="top">
+                    <img class="timelineIcon" src="timelineicon/play.svg" height="50" width="50" @click='playIcon' />
+                </el-tooltip>
+                <el-tooltip content="accelerate" placement="top">
+                    <img class="timelineIcon" src="timelineicon/accelerate.svg" height="50" width="50"
+                         @click='accelerateIcon' />
+                </el-tooltip>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="app2" style="float: left; width: 300px; background: lightslategray;">
+    <div style="background-color: #ffffff">
+    <el-row style="margin-bottom: 0px">
+        <el-date-picker
+                v-model="dateValue"
+                type="date"
+                :clearable="false"
+                placeholder="Select Date"
+                :picker-options="pickerOptions"
+                @change="dateChange"
+                style="float: left; width: 300px; border-radius: 0px; border: 0px">
+        </el-date-picker>
+    </el-row>
+    </div>
+    <el-menu class="el-menu-vertical-demo" :default-openeds="defaultOpeneds">
+        <el-submenu index="1">
+            <template slot="title">
+                <i class="fas fa-globe-asia"></i>
+                <span slot="title">Show</span>
+            </template>
+            <el-row>
+                <el-col :push="2" :span="12" style="padding-top: 10px">
+                    <el-switch
+                            v-model="isBusLinesShow"
+                            active-text="Bus Routes"
+                            @change="showBusLines">
+                    </el-switch>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :push="2" :span="14" style="padding-top: 10px">
+                    <el-switch
+                            v-model="isStationsShow"
+                            active-text="Bus Stations"
+                            @change="showStations">
+                    </el-switch>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :push="2" :span="12" style="padding-top: 10px">
+                    <el-switch
+                            v-model="isRoadShow"
+                            active-text="Roads"
+                            @change="showRoads">
+                    </el-switch>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :push="2" :span="12" style="padding-top: 10px">
+                    <el-switch
+                            v-model="isBusFlowShow"
+                            active-text="Bus Flow"
+                            @change="showBusFlow">
+                    </el-switch>
+                </el-col>
+            </el-row>
+        </el-submenu>
+
+        <el-submenu index="2">
+            <template slot="title">
+                <i class="fas fa-search"></i>
+                <span slot="title">Region Analysis</span>
+            </template>
+            <!--<el-menu-item-group title="Region Search">-->
+                <!--<el-menu-item index="2-2" @click="searchByRegion">Search</el-menu-item>-->
+            <!--</el-menu-item-group>-->
+            <el-row style="margin-top: 10px">
+                <el-col :offset="2" :span="12">
+                    <el-button :ref="drawStatus" icon="el-icon-crop" round @click="drawCreate" :disabled="drawCreateDisabled">{{ drawText }}</el-button>
+                </el-col>
+                <el-col :push="1" :span="8">
+                    <el-button :ref="deleteStatus" :icon="deleteIcon" round @click="drawDelete" :disabled="drawDeleteDisabled"></el-button>
+                </el-col>
+            </el-row>
+        </el-submenu>
+
+        <el-submenu index="4">
+            <template slot="title">
+                <i class="fas fa-bus"></i>
+                <span slot="title">Bus Route Analysis</span>
+            </template>
+            <el-row>
+                <el-col :push="3" :span="24" style="margin-top: 10px">
+                    <template>
+                        <el-time-picker style="width: 208px"
+                                        is-range
+                                        v-model="date_range"
+                                        range-separator="-"
+                                        start-placeholder="Start time"
+                                        end-placeholder="End time"
+                                        placeholder="Choose search time range"  >
+                        </el-time-picker>
+                    </template>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :push="3" :span="24">
+                    <template>
+                        <el-select v-model="line_ids" style="width: 208px" filterable multiple placeholder="Choose Lines">
+                            <el-option
+                                    v-for="(item,index) in lineSearchId"
+                                    :key="index"
+                                    :value="item">
+                            </el-option>
+                        </el-select>
+                    </template>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :offset="2" :span="12">
+                    <el-switch
+                            v-model="isLineStationsShow"
+                            active-text="Bus Station"
+                            @change="showLineStations">
+                    </el-switch>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :offset="2" :span="12">
+                    <el-button icon="el-icon-search" round @click="linePlayBack" :loading="line_loading_status">Search</el-button>
+                </el-col>
+                <el-col :push="1" :span="8">
+                    <el-button icon="el-icon-delete" round @click="clearLines"></el-button>
+                </el-col>
+            </el-row>
+
+        </el-submenu>
+    </el-menu>
+    <!--<h4  :text=""></h4>-->
+</div>
+
+<div id="minimap" onclick="miniMapDisable()">
+</div>
+
+<div id="snapshot" v-loading="shotloading" style="position: absolute; top: 0; right: 0; float: right; width: 250px; height: 100%; background: #ffffff; overflow-y: scroll;">
+    <el-tooltip v-if="!snapshoting" content="snapshot" placement="right-end">
+        <img class="timelineIcon" src="timelineicon/snapshot.svg" height="40" width="40"
+             style="border-radius: 15px; margin-top: 5px;
+             margin-left: 5px; position: fixed; z-index: 100;" @click="snapshotIcon"/>
+    </el-tooltip>
+    <div v-else>
+        <img class="timelineIcon" src="timelineicon/true.svg" height="40" width="40"
+             style="border-radius: 15px; margin-top: 5px;
+             margin-left: 5px; position: fixed; z-index: 100;" @click="saveSnapshot"/>
+        <img class="timelineIcon" src="timelineicon/false.svg" height="40" width="40"
+             style="border-radius: 15px; margin-top: 5px;
+             margin-left: 55px; position: fixed; z-index: 100;" @click="cancel"/>
+    </div>
+    <div id="cardList" align="center" style="margin-outside: 10px; margin-top: 55px;">
+
+    </div>
+</div>
+
+<div id="galley">
+    <ul id="PicLists" class="pictures">
+        <!--<li><img data-original="../images/tibet-1.jpg" src="../images/thumbnails/tibet-1.jpg" alt="Cuo Na Lake"></li>-->
+    </ul>
+</div>
+
+
+
+<style>
+    .pictures {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pictures > li {
+        border: 1px solid transparent;
+        float: left;
+        height: calc(100% / 3);
+        margin: 0 -1px -1px 0;
+        overflow: hidden;
+        width: calc(100% / 3);
+    }
+
+    .pictures > li > img {
+        cursor: zoom-in;
+        width: 100%;
+    }
+    .el-row {
+        margin-bottom: 20px
+    }
+    .el-col {
+        border-radius: 4px;
+    }
+    .bg-purple-dark {
+        background: #99a9bf;
+    }
+    .bg-purple {
+        background: #d3dce6;
+    }
+    .bg-purple-light {
+        background: #e5e9f2;
+    }
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+    }
+    .row-bg {
+        padding: 10px 0;
+        background-color: #f9fafc;
+    }
+</style>
+
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+
+<div style="width: 220px; height: 220px; z-index: 100000" id="markers"></div>
+
+<script type="text/javascript" src="MovingMarker.js"></script>
+<script src="heatmap.js"></script>
+<script src="leaflet-heatmap.js"></script>
+<script src="https://cdn.bootcss.com/Ladda/1.0.6/spin.min.js"></script>
+<script src="https://cdn.bootcss.com/Ladda/1.0.6/ladda.min.js"></script>
+<script src="https://cdn.bootcss.com/viewerjs/1.3.7/viewer.min.js"></script>
+<link href="https://cdn.bootcss.com/viewerjs/1.3.7/viewer.min.css" rel="stylesheet">
+<script src="L.CanvasLayer.js"></script>
+<script src="timeline.js"></script>
+<script src="local.js"></script>
+<script src="L.minimap.js"></script>
+<script src="html2canvas.min.js"></script>
+<script src="sz_function.js"></script>
+<script src="chartDisplay.js"></script>
+<script src="chartReplay.js"></script>
+<script src="util.js"></script>
+<link rel="stylesheet" href="szbus.css"/>
+
+</body>
+</html>

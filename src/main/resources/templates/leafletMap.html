@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        #test {
+            opacity: 0;
+            color: black;
+        }
+
+        #map {
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .navtable {
+            overflow: scroll;
+            margin: 0 auto;
+        }
+
+        .navtable td {
+            text-align: center;
+            font-size: 15px;
+            vertical-align: top;
+        }
+
+        .navtable th {
+            text-align: center;
+            font-size: 15px;
+        }
+    </style>
+
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        h1 {
+            display: none;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0px;
+        }
+
+        main {
+            height: 100%;
+        }
+
+        section {
+            height: 100%;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>Leaflet Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+    <link rel="stylesheet" href="https://leaflet.github.io/Leaflet.draw/src/leaflet.draw.css"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
+
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="leafletMap.css"/>
+    <script type="text/javascript" src="../static/MovingMarker.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link href="https://cdn.bootcss.com/leaflet/1.5.1/leaflet.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/leaflet/1.5.1/leaflet.js"></script>
+    <link href="https://cdn.bootcss.com/leaflet.draw/1.0.4/leaflet.draw.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <link href="https://cdn.bootcss.com/leaflet.fullscreen/1.5.1/Control.FullScreen.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"></script>
+    <script src="https://cdn.bootcss.com/leaflet.fullscreen/1.5.1/Control.FullScreen.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+    <script src="heatmap.js"></script>
+    <script src="leaflet-heatmap.js"></script>
+</head>
+<body>
+
+<!--<div id='map' style='width: 100%; height: 100%;'></div>-->
+<div id="map" style="width: 100%; height: 100%; position: absolute;">
+    <div class="leftDiv test-1" id="leftDiv">
+        <form name="form1" class=“center”>
+            <br>
+            <button type="button" class="highlight" disabled="">
+                Hi, I'm Navigator.
+            </button>
+            <br><br><br><br>
+            <button type="button" class="highlight" disabled="">
+                Region Info
+            </button>
+            <div class="test-1" style="margin-top:10px; height:170px;margin-left: 15px; overflow:scroll; ">
+                <table id="table_region" class="navtable test-1" style="width:100%; ">
+                    <tr>
+                        <th>Identifier</th>
+                        <th>State</th>
+                        <th>Select</th>
+                    </tr>
+                    <tbody id="tbody_region"></tbody>
+                </table>
+                <!--<div id="combined_scrollArea" class="clusterize-scroll ">
+                    <table style="width: 100%" align="center">
+                        <tbody id="combined_contentArea" class="clusterize-content" tabindex="0" style="counter-increment: clusterize-counter -1;"><tr><td width="100px" style="padding-bottom: 0.5ex"><span style="color:blue;font-weight:bold; font-size: small">window: 1</span></td><td width="80px" style="padding-bottom:  0.5ex"><button class="btn btn-success btn-xs rect_checkable" style="font-size: x-small" value="1">on display</button></td><td width="80px" style="padding-bottom: 0.5ex"><button class="btn btn-secondary btn-xs" style="font-size: x-small" disabled="">NaN</button></td><td width="50px" style="padding-bottom:  0.5ex"><input type="checkbox" name="com_rect" value="1" checked=""></td></tr><tr><td width="100px" style="padding-bottom: 0.5ex"><span style="color:blue;font-weight:bold; font-size: small">window: 0</span></td><td width="80px" style="padding-bottom:  0.5ex"><button class="btn btn-success btn-xs rect_checkable" style="font-size: x-small" value="0">on display</button></td><td width="80px" style="padding-bottom: 0.5ex"><button class="btn btn-secondary btn-xs" style="font-size: x-small" disabled="">NaN</button></td><td width="50px" style="padding-bottom:  0.5ex"><input type="checkbox" name="com_rect" value="0" checked=""></td></tr></tbody>
+                    </table>
+                </div>-->
+            </div>
+            <br>
+            <button type="button" class="highlight" disabled="">
+                Result Panel
+            </button>
+            <br>
+            <div class="test-1" style="width:100%; height:300px; overflow:scroll; ">
+                <table id="table_result" class="navtable test-1" style="width:100%; overflow: scroll">
+                    <tr>
+                        <th>Number</th>
+                        <th>Traj_ID</th>
+                    </tr>
+                    <tbody id="tbody_result"></tbody>
+                </table>
+            </div>
+            <div style="width:100%; height:50px;"><span id="showTotalNum"></span><br>
+                <span id="onShowNum"></span><br>
+            </div>
+        </form>
+        <button id="changeBtn" class="changeBtn">Navigate</button>
+    </div>
+</div>
+<script type="text/javascript" src="MovingMarker.js"></script>
+<script src="../static/heatmap.js"></script>
+<script src="../static/leaflet-heatmap.js"></script>
+<script>
+    var cfg = {
+        // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+        "radius": 0.002,
+        "maxOpacity": .7,
+        // scales the radius based on map zoom
+        "scaleRadius": true,
+        // if set to false the heatmap uses the global maximum for colorization
+        // if activated: uses the data maximum within the current map boundaries
+        //   (there will always be a red spot with useLocalExtremas true)
+        "useLocalExtrema": true,
+        // which field name in your data represents the latitude - default "lat"
+        latField: 'lat',
+        // which field name in your data represents the longitude - default "lng"
+        lngField: 'lng',
+        // which field name in your data represents the data value - default "value"
+        valueField: 'count'
+    };//add 11.19
+    var heatmapLayer = new HeatmapOverlay(cfg);//add 11.19
+
+    var osmUrl = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoid2VudGFvIiwiYSI6ImNrMjYyd2xlaTBhcWIzZ3FobDIwdW9xamoifQ.AVNeT2rBOhUtQnQfFjs7Fw',
+        osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib}),
+        map = new L.Map('map', {
+            center: new L.LatLng(30.6666, 104.0605),
+            zoom: 14,
+            fullscreenControl: true,
+            layers: [heatmapLayer]
+        }),
+        drawnItems = L.featureGroup().addTo(map);
+    L.control.layers({
+        'osm': osm.addTo(map),
+        "google": L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+            attribution: 'google'
+        })
+    }, {'drawlayer': drawnItems}, {position: 'topleft', collapsed: false}).addTo(map);
+
+    $.ajax({
+        type: "GET",
+        url: "/show_heatmap",//注意路径
+        data: restring,
+        success: function (data) {
+            var record = []
+            var heatdata = data.toString().split("\n");
+            for (var i = 0; i < heatdata.length; i++) {
+                if (heatdata[i].length > 1) {
+                    var tmp = {
+                        lat: parseFloat(heatdata[i].split(" ")[1]),
+                        lng: parseFloat(heatdata[i].split(" ")[0]),
+                        count: 1
+                    };
+                    record.push(tmp);
+                }
+
+            }
+            var testData = {
+                max: 3,
+                //data: [{lat: 24.6408, lng:46.7728, count: 3},{lat: 50.75, lng:-1.55, count: 1},{lat: 52.6333, lng:1.75, count: 1},{lat: 48.15, lng:9.4667, count: 1},{lat: 52.35, lng:4.9167, count: 2},{lat: 60.8, lng:11.1, count: 1},{lat: 43.561, lng:-116.214, count: 1},{lat: 47.5036, lng:-94.685, count: 1},{lat: 42.1818, lng:-71.1962, count: 1},{lat: 42.0477, lng:-74.1227, count: 1},{lat: 40.0326, lng:-75.719, count: 1},{lat: 40.7128, lng:-73.2962, count: 2},{lat: 27.9003, lng:-82.3024, count: 1},{lat: 38.2085, lng:-85.6918, count: 1},{lat: 46.8159, lng:-100.706, count: 1},{lat: 30.5449, lng:-90.8083, count: 1},{lat: 44.735, lng:-89.61, count: 1},{lat: 41.4201, lng:-75.6485, count: 2},{lat: 39.4209, lng:-74.4977, count: 1},{lat: 39.7437, lng:-104.979, count: 1},{lat: 39.5593, lng:-105.006, count: 1},{lat: 45.2673, lng:-93.0196, count: 1},{lat: 41.1215, lng:-89.4635, count: 1},{lat: 43.4314, lng:-83.9784, count: 1},{lat: 43.7279, lng:-86.284, count: 1},{lat: 40.7168, lng:-73.9861, count: 1},{lat: 47.7294, lng:-116.757, count: 1},{lat: 47.7294, lng:-116.757, count: 2},{lat: 35.5498, lng:-118.917, count: 1},{lat: 34.1568, lng:-118.523, count: 1},{lat: 39.501, lng:-87.3919, count: 3},{lat: 33.5586, lng:-112.095, count: 1},{lat: 38.757, lng:-77.1487, count: 1},{lat: 33.223, lng:-117.107, count: 1},{lat: 30.2316, lng:-85.502, count: 1},{lat: 39.1703, lng:-75.5456, count: 8},{lat: 30.0041, lng:-95.2984, count: 2},{lat: 29.7755, lng:-95.4152, count: 1},{lat: 41.8014, lng:-87.6005, count: 1},{lat: 37.8754, lng:-121.687, count: 7},{lat: 38.4493, lng:-122.709, count: 1},{lat: 40.5494, lng:-89.6252, count: 1},{lat: 42.6105, lng:-71.2306, count: 1},{lat: 40.0973, lng:-85.671, count: 1},{lat: 40.3987, lng:-86.8642, count: 1},{lat: 40.4224, lng:-86.8031, count: 4},{lat: 47.2166, lng:-122.451, count: 1},{lat: 32.2369, lng:-110.956, count: 1},{lat: 41.3969, lng:-87.3274, count: 2},{lat: 41.7364, lng:-89.7043, count: 2},{lat: 42.3425, lng:-71.0677, count: 1},{lat: 33.8042, lng:-83.8893, count: 1},{lat: 36.6859, lng:-121.629, count: 2},{lat: 41.0957, lng:-80.5052, count: 1},{lat: 46.8841, lng:-123.995, count: 1},{lat: 40.2851, lng:-75.9523, count: 2},{lat: 42.4235, lng:-85.3992, count: 1},{lat: 39.7437, lng:-104.979, count: 2},{lat: 25.6586, lng:-80.3568, count: 7},{lat: 33.0975, lng:-80.1753, count: 1},{lat: 25.7615, lng:-80.2939, count: 1},{lat: 26.3739, lng:-80.1468, count: 1},{lat: 37.6454, lng:-84.8171, count: 1},{lat: 34.2321, lng:-77.8835, count: 1},{lat: 34.6774, lng:-82.928, count: 1},{lat: 39.9744, lng:-86.0779, count: 1},{lat: 35.6784, lng:-97.4944, count: 2},{lat: 33.5547, lng:-84.1872, count: 1},{lat: 27.2498, lng:-80.3797, count: 1},{lat: 41.4789, lng:-81.6473, count: 1},{lat: 41.813, lng:-87.7134, count: 1},{lat: 41.8917, lng:-87.9359, count: 1},{lat: 35.0911, lng:-89.651, count: 1},{lat: 32.6102, lng:-117.03, count: 1},{lat: 41.758, lng:-72.7444, count: 1},{lat: 39.8062, lng:-86.1407, count: 1},{lat: 41.872, lng:-88.1662, count: 1},{lat: 34.1404, lng:-81.3369, count: 1},{lat: 46.15, lng:-60.1667, count: 1},{lat: 36.0679, lng:-86.7194, count: 1},{lat: 43.45, lng:-80.5, count: 1},{lat: 44.3833, lng:-79.7, count: 1},{lat: 45.4167, lng:-75.7, count: 2},{lat: 43.75, lng:-79.2, count: 2},{lat: 45.2667, lng:-66.0667, count: 3},{lat: 42.9833, lng:-81.25, count: 2},{lat: 44.25, lng:-79.4667, count: 3},{lat: 45.2667, lng:-66.0667, count: 2},{lat: 34.3667, lng:-118.478, count: 3},{lat: 42.734, lng:-87.8211, count: 1},{lat: 39.9738, lng:-86.1765, count: 1},{lat: 33.7438, lng:-117.866, count: 1},{lat: 37.5741, lng:-122.321, count: 1},{lat: 42.2843, lng:-85.2293, count: 1},{lat: 34.6574, lng:-92.5295, count: 1},{lat: 41.4881, lng:-87.4424, count: 1},{lat: 25.72, lng:-80.2707, count: 1},{lat: 34.5873, lng:-118.245, count: 1},{lat: 35.8278, lng:-78.6421, count: 1}]
+                data: record
+            };//add 11.19
+
+            heatmapLayer.setData(testData);//add 11.19
+        }
+    });
+
+    map.addControl(new L.Control.Draw({
+        edit: {
+            featureGroup: drawnItems,
+            poly: {
+                allowIntersection: false
+            }
+        },
+        draw: {
+            polygon: false,
+            polyline: false,
+            marker: false,
+            circle: false,
+            circlemarker: false
+        }
+    }));
+    var trsjlist = [];//轨迹，删除使用
+    var layerlist = [];//每个增加的层级，之后删除使用
+    var selectedLayer = []; //default值是1。 1代表选中，0代表不选。通过select按钮控制。
+    var restring = "";//储存结果，";"为分割，每个一","分割经纬度
+    var flagfirstquery = true;//判断为第一次画框
+    var motionlist = [];
+
+    var parisKievLL = JSON.parse('[{"lat":48.8567,"lng":2.3508},{"lat":50.45,"lng":30.523333}]');
+
+    var carIcon = L.icon({
+        iconUrl: '121.jpg',
+        //shadowUrl: 'leaf-shadow.png',
+
+        iconSize: [38, 95], // size of the icon
+        shadowSize: [50, 64], // size of the shadow
+        iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+        shadowAnchor: [4, 62],  // the same for the shadow
+        popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+
+    L.easyButton('fas fa-eraser fa-lg', function () {
+        if (window.confirm("确认清除所有轨迹？")) {
+            restring = "";
+            flagfirstquery = true;
+            $("#table_result tr:not(:first)").remove();
+            $("#table_region tr:not(:first)").remove();
+            for (i = 0; i < trsjlist.length; i++) {
+                trsjlist[i].remove();
+                // map.removeLayer(motionlist[i]);
+            }
+            for (i = 0; i < layerlist.length; i++) {
+                layerlist[i].remove();
+            }
+            trsjlist = [];
+            motionlist = [];
+            layerlist = [];
+            selectedLayer = [];
+            $("#onShowNum").text("");
+            $("#showTotalNum").text("");
+        }
+    }).addTo(map)
+
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        drawnItems.addLayer(layer);
+        layerlist.push(layer);
+        selectedLayer.push(1);
+        addRow();
+    });
+
+    L.easyButton('fas fa-search fa-lg', function () {
+        if (window.confirm("确认查询？")) {
+            //add start 补充的点击查询也会清除轨迹的功能
+            restring = "";
+            flagfirstquery = true;
+            $("#table_result tr:not(:first)").remove();
+            //$("#table_region tr:not(:first)").remove();
+            for (i = 0; i < trsjlist.length; i++) {
+                trsjlist[i].remove();
+                map.removeLayer(motionlist[i]);
+            }
+            /*for (i = 0; i < layerlist.length; i++) {
+                layerlist[i].remove();
+            }*/
+            trsjlist = [];
+            motionlist = [];
+            //layerlist = [];
+            //selectedLayer = [];
+            $("#onShowNum").text("");
+            $("#showTotalNum").text("");
+            //add end
+            for (i = 0; i < layerlist.length; i++) {
+                if (selectedLayer[i] == 1) {
+                    var resp = layerlist[i].toGeoJSON().geometry.coordinates.toString();
+                    var testlist = resp.split(",");
+                    if (flagfirstquery) {
+                        restring = restring + testlist[1] + "," + testlist[0] + "," + testlist[5] + "," + testlist[4];
+                        //motionMark = motionMark + "'[{\"lat\":" + testlist[1] + ",\"lng\":" +
+                        flagfirstquery = false;
+                    } else {
+                        restring = restring + ";" + testlist[1] + "," + testlist[0] + "," + testlist[5] + "," + testlist[4];
+                    }
+                }
+            }
+            $.ajax({
+                type: "GET",
+                url: "/search",//注意路径
+                data: restring,
+                timeout: 60000,
+                success: function (data) {
+                    //清除上一次画的线段
+                    if (data === "NOTRAJ")
+                        alert("no trajectory")
+                    else {
+                        flag = true;
+                        var trajs = data.toString().split("\n");
+                        var bodyObj = document.getElementById("tbody_result");
+                        var rowCount = bodyObj.rows.length;
+                        var trajs_id = trajs[trajs.length - 1].split(",");
+                        //alert(trajs[trajs.length - 1]);
+                        for (j = 0, len = trajs.length - 1; j < len; j++) {
+                            var longLatList = eval(trajs[j]);//经纬度数组
+                            var antPath = L.polyline.antPath;
+                            var gPath = antPath(longLatList, {
+                                "paused": true,   　　//暂停  初始化状态
+                                "reverse": false,　　//方向反转
+                                "delay": 2000,　　　　//延迟，数值越大效果越缓慢
+                                "dashArray": [5, 100],　//间隔样式
+                                "weight": 5,　　　　//线宽
+                                "opacity": 0.6,　　//透明度
+                                "color": "yellow",　//颜色
+                                "pulseColor": "red"　　//块颜色
+                            });
+                            var marker1 = L.Marker.movingMarker(longLatList, 50000).addTo(map).setIcon(L.divIcon({html: "<i class='fa fa-taxi fa-2x fa-flip-horizontal' aria-hidden='true' style=\"color: springgreen\"></i>"}));
+                            var path = L.polyline(parisKievLL);
+                            path.addTo(map);
+
+                            gPath.addTo(map);
+                            trsjlist.push(gPath);
+                            // motionlist.push(marker1);
+                            var newRow = bodyObj.insertRow(rowCount++);
+                            newRow.insertCell(0).innerHTML = rowCount;
+                            newRow.insertCell(1).innerHTML = parseInt(trajs_id[j]);
+                        }
+                        $("#showTotalNum").text("Total trajectory found: " + trajs_id[trajs_id.length - 1]);
+                        if (trajs_id[trajs_id.length - 1] >= 5)
+                            $("#onShowNum").text("On show: 5");
+                        else
+                            $("#onShowNum").text("On show: " + trajs_id[trajs_id.length - 1]);
+                    }
+                }
+            });
+            flagfirstquery = true;
+            restring = "";
+        } else {
+
+        }
+    }).addTo(map)
+
+</script>
+
+<script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script>
+
+    /*    var line = L.polyline([[30.621303929864702,104.0645002364628],
+        [30.611296682312265,104.06479416187392],
+        [30.605315169810844,104.06486550118474],
+        [30.588415017465092,104.06540157047067],
+        [30.578248513748836,104.06564054784866],
+        [30.575031166710655,104.06585400698752],
+        [30.570243982305616,104.0660089790674]
+        ]),
+            animatedMarker = L.animatedMarker(line.getLatLngs());
+
+        map.addLayer(animatedMarker);*/
+
+
+    $(".changeBtn").click(function () {
+        if (!$(".leftDiv").hasClass("changeClass")) {
+            $(".leftDiv").addClass("changeClass")
+        } else {
+            $(".leftDiv").removeClass("changeClass")
+        }
+    })
+
+    function addRow() {
+        var bodyObj = document.getElementById("tbody_region");
+        var rowCount = bodyObj.rows.length;
+        var newRow = bodyObj.insertRow(rowCount++);
+        newRow.insertCell(0).innerHTML = "Window " + (rowCount - 1);
+        newRow.insertCell(1).innerHTML = '<input type="button" id="btn1" class="txt1" value="on display" onclick="change(this)">';
+        newRow.insertCell(2).innerHTML =
+            '<input type="checkbox" name="checkbox"  value="checkbox1" checked="checked" onclick="chooseLayer(this)">';
+    }
+
+    function chooseLayer(inputobj) {
+        var rowNum = inputobj.parentNode.parentNode.rowIndex;
+        if (inputobj.value == "checkbox1") {
+            selectedLayer[rowNum - 1] = 0;
+            inputobj.value = "checkbox2";
+        } else {
+            selectedLayer[rowNum - 1] = 1;
+            inputobj.value = "checkbox1";
+        }
+    }
+
+    function change(inputobj) {
+        var rowNum = inputobj.parentNode.parentNode.rowIndex;
+        if (inputobj == null) return;
+        if (inputobj.value == "on display") {
+            inputobj.value = "on hide";
+            drawnItems.removeLayer(layerlist[rowNum - 1]);
+        } else {
+            inputobj.value = "on display";
+            drawnItems.addLayer(layerlist[rowNum - 1]);
+        }
+    }
+</script>
+</body>
+</html>

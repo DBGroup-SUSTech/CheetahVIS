@@ -1,0 +1,17 @@
+server:
+  port: 9988
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    check-template-location: true
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+  resources:
+    static-locations: classpath:/static/
+  datasource:
+    url: jdbc:mysql://10.20.126.63:3306/sz_data
+    username: root
+    password: spark-123456
+    driver-class-name: com.mysql.jdbc.Driver
